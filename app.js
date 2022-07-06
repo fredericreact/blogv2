@@ -17,8 +17,6 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
- let posts = [];
-
 mongoose.connect("mongodb://localhost:27017/blogDB");
 
 
@@ -29,11 +27,19 @@ const postsSchema = {
 
 const Post = mongoose.model("Post", postsSchema);
 
+
 app.get("/", function(req, res){
+
+Post.find({},function(err, foundposts){
+
   res.render("home", {
     startingContent: homeStartingContent,
-    posts: posts
+    posts: foundposts
     });
+
+});
+
+
 });
 
 app.get("/about", function(req, res){
