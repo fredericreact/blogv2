@@ -17,7 +17,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost:27017/blogDB");
+mongoose.connect("mongodb://localhost:27017/blogDB",{useNewUrlParser: true});
 
 
 const postsSchema = {
@@ -75,19 +75,33 @@ post.save(function(err){
 
 });
 
+
+
 app.get("/posts/:postName", function(req, res){
-  const requestedTitle = _.lowerCase(req.params.postName);
+  const requestedTitle = req.params.postName;
 
-  posts.forEach(function(post){
-    const storedTitle = _.lowerCase(post.title);
+Post.findOne({_id:requestedTitle},function(err, foundPost){
+  if (!err) {
+    console.log(foundPost);
+    res.render("post", {
+      title: foundPost.title,
+      content: foundPost.content
+    });
+  } else {
+    console.log(err);
+  }
+})
 
-    if (storedTitle === requestedTitle) {
-      res.render("post", {
-        title: post.title,
-        content: post.content
-      });
-    }
-  });
+  // posts.forEach(function(post){
+  //   const storedTitle = _.lowerCase(post.title);
+  //
+  //   if (storedTitle === requestedTitle) {
+  //     res.render("post", {
+  //       title: post.title,
+  //       content: post.content
+  //     });
+  //   }
+  // });
 
 });
 
